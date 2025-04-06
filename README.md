@@ -1,71 +1,56 @@
 # zigzagServer
 
-Node.js Server with TypeScript & Docker
+Node.js Server with TypeScript & Mongodb
 
-This is a simple Node.js + Express + TypeScript backend that can be containerized using Docker and deployed locally or in the cloud.
+MongoDB Compass Setup Guide
 
-🚀 Features
+Overview
 
-Built with Express.js & TypeScript
+MongoDB Compass is a graphical user interface (GUI) for MongoDB that allows you to interact with your MongoDB databases and perform CRUD (Create, Read, Update, Delete) operations, manage indexes, visualize data, and more.
 
-Uses dotenv for environment variables
+This guide will help you connect to your MongoDB database using MongoDB Compass.
 
-Supports Docker for easy deployment
 
-CORS enabled for cross-origin requests
+Prerequisites
 
-📌 Prerequisites
+Before using MongoDB Compass, ensure you have the following:
+	•	MongoDB installed and running locally or on a server.
+	•	MongoDB Compass installed on your machine. You can download it from [here](https://www.mongodb.com/try/download/compass).
 
-Ensure you have the following installed:
+Connecting to MongoDB Using MongoDB Compass
 
-Node.js
+1. Install MongoDB Compass
+	•	Go to the MongoDB Compass [download](https://www.mongodb.com/try/download/compass) page.
+	•	Select the version that matches your operating system.
+	•	Download and install MongoDB Compass following the on-screen instructions.
 
-Docker
+2. Open MongoDB Compass
+	•	After installation, open MongoDB Compass.
+	•	You’ll be presented with the connection screen.
 
-📦 Installation
+3. Connection String Format
 
-Clone the repository:
+MongoDB Compass uses a connection string to connect to a MongoDB server. A typical connection string looks like this:
 
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+Local
+---------------------------------
+mongodb://localhost:27017/zigzag
 
-Install dependencies:
+4. Enter Connection Details in Compass
 
-npm install
+	•	Hostname: Enter localhost or the server IP address.
+	•	Port: Use the default MongoDB port: 27017.
+    •	Click Connect after entering your connection details.
 
-Create a .env file and add:
+5. Explore the Database
+	•	After connecting, MongoDB Compass will show a list of available databases.
+	•	Select a database to view collections, documents, and indexes.
 
-PORT=8081
-
-Run the development server:
-
-npm run dev
-
-Your server will be running at http://localhost:8081
-
-📡 API Endpoints
-
-Method
-
-Endpoint
-
-Description
-
-GET
-
-/
-
-Home route
-
-GET
-
-/api/data
-
-Returns a sample JSON response
-
-Test using:
-
-curl http://localhost:5000/api/data
+6. Perform CRUD Operations
+	•	Create: Insert new documents into collections.
+	•	Read: Browse, filter, and search for documents.
+	•	Update: Modify existing documents with MongoDB queries.
+	•	Delete: Remove individual documents or entire collections.   
 
 
 🔥 Contributing
