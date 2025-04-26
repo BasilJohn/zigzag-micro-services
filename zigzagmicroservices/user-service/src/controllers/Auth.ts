@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Request, Response } from 'express'
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
 
@@ -16,20 +17,28 @@ if (!JWT_SECRET_ACCESS_TOKEN || !JWT_SECRET_REFRESH_TOKEN) {
 // POST /api/v1/user/signup
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
+    const { name, username, email, password, accountType } = req.body;
 
     // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
       res.status(400).json({ message: 'Email already in use' });
+      return;
+    }
+
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      res.status(400).json({ message: 'Username already in use' });
       return;
     }
 
     // Create a new user
     const newUser = new User({
       name,
+      username,
       email,
       password,
+      accountType,
     });
 
     // Save the user to the database
@@ -48,6 +57,18 @@ export const login = async (
 ): Promise<void> => {
   try {
     const { email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordValid) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
 
     //Create a JWT token if login is successful
     const payload = {
