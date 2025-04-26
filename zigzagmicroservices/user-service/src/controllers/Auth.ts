@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 
+// POST /api/v1/user/signup
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password } = req.body;
@@ -28,6 +29,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// POST /api/v1/user/login
 export const login = async (
   req: Request,
   res: Response
