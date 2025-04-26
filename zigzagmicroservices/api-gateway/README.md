@@ -74,3 +74,14 @@ User Service -->http://localhost:3000/api/v1/user/login
 Event Service -->http://localhost:3000/api/v1/events/getAllEvents
 
 ✅ All requests go through the API Gateway (port 3000).
+
+Client
+  |
+  |----> [API Gateway] (port 3000)
+               |
+               |-- (if /api/v1/user/*) --> [User Service] (port 3030)
+               |
+               |-- (if /api/v1/events/*) --> [Event Service] (port 3031)
+
+•	The Client only talks to API Gateway.
+•	The Gateway decides which service to forward the request to based on   the URL path.              
