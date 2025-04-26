@@ -1,6 +1,7 @@
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import dotenv from "dotenv";
+import { authenticateAccessToken } from "./middleware/authMiddleWare";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(
 // Proxy /api/v1/events
 app.use(
   "/api/v1/events",
+  authenticateAccessToken,
   createProxyMiddleware({
     target: process.env.EVENT_SERVICE_URL,
     changeOrigin: true,

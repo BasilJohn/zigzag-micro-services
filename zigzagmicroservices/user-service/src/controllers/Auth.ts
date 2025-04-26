@@ -1,5 +1,17 @@
-import { Request, Response } from 'express';
-import User from '../models/User';
+import dotenv from "dotenv";
+dotenv.config();
+
+import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import User from '../models/User'
+
+
+
+const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
+const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
+if (!JWT_SECRET_ACCESS_TOKEN || !JWT_SECRET_REFRESH_TOKEN) {
+  throw new Error('JWT_SECRET is not defined in environment variables');
+}
 
 // POST /api/v1/user/signup
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -37,8 +49,25 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
+    //Create a JWT token if login is successful
+    const payload = {
+      email: email,
+    };
+
+    const user ={
+      email
+    }
+
+    const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
+      expiresIn: "1h",
+    });
+
+    const refreshToken = jwt.sign(user, JWT_SECRET_REFRESH_TOKEN , {
+      expiresIn: '7d', 
+    });
+
     // dummy login response
-    res.status(200).json({ message: 'Logged in!' });
+    res.status(200).json({ user, accessToken,refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
