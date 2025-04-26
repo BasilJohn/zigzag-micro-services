@@ -75,22 +75,20 @@ Event Service -->http://localhost:3000/api/v1/events/getAllEvents
 
 ✅ All requests go through the API Gateway (port 3000).
 
-            +-----------+
-            |   Client   |
-            +-----------+
-                  |
-                  v
-           +----------------+
-           |   API Gateway   | (localhost:3000)
-           +----------------+
-            /              \
-           /                \
-  +----------------+   +----------------+
-  |  User Service   |   |  Event Service  |
-  | (localhost:3030)|   | (localhost:3031)|
-  +----------------+   +----------------+
+ ## 🌐 System Architecture
 
-  
+```plaintext
+🙋 Client
+   |
+   v
+🚪 API Gateway (localhost:3000)
+   |      
+   |---📦 /api/v1/user/*  ---> 👤 User Service (localhost:3030)
+   |
+   |---🎉 /api/v1/events/* ---> 📅 Event Service (localhost:3031)
 
-•	The Client only talks to API Gateway.
-•	The Gateway decides which service to forward the request to based on   the URL path.              
+🔥 Request Flow
+	•	🙋 Client sends a request to 🚪 API Gateway.
+	•	🚪 API Gateway checks the URL path:
+	•	If the path is /api/v1/user/*, it routes to 👤 User Service (port 3030).
+	•	If the path is /api/v1/events/*, it routes to 📅 Event Service (port 3031).
