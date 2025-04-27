@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import eventRouter from "./routes/event.route";
 import sequelize from "./config/database";
+import { connectRabbitMQ } from "./rabbitmq/rabbitmq";
 
 //Load DotENV
 dotenv.config();
@@ -19,6 +20,8 @@ app.use("/api/v1/events", eventRouter);
 // Middleware
 app.use(cors());
 
+//Rabbit MQ for message queue
+//connectRabbitMQ()
 
 sequelize.sync({alter:true}).then(() => {
     console.log('✅ Database synced');
