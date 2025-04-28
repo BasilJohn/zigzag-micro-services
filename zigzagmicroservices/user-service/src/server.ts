@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import { dbConnect }  from "./config/database";
+import sequelize from "./config/database";
 
 import userRouter from "./routes";
 
@@ -10,14 +10,20 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use("/api/v1/user", userRouter);
-//Db Connect
-dbConnect();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`User Service running on http://localhost:${PORT}`);
-});
+sequelize
+  .sync()
+  .then(() => {
+    console.log("✅ Database synced");
+    app.listen(PORT, () => {
+      console.log(`🚀 User Service running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Failed to connect to database:", err);
+  });

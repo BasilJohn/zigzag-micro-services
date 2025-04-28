@@ -23,11 +23,15 @@ app.use(cors());
 //Rabbit MQ for message queue
 //connectRabbitMQ()
 
-sequelize.sync({alter:true}).then(() => {
-    console.log('✅ Database synced');
+// Start Server
+sequelize
+  .sync()
+  .then(() => {
+    console.log("✅ Database synced");
     app.listen(PORT, () => {
       console.log(`🚀 Event Service running at http://localhost:${PORT}`);
     });
-  }).catch((err) => {
-    console.error('❌ Failed to connect to database:', err);
+  })
+  .catch((err) => {
+    console.error("❌ Failed to connect to database:", err);
   });

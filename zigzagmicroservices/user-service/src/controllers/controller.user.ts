@@ -4,8 +4,8 @@ dotenv.config();
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import User from '../models/User'
-
+import User from '../models/model.user'
+import UserBio from "../models/model.userbio";
 
 
 const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
@@ -20,24 +20,25 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const { name, username, email, password, accountType } = req.body;
 
     // Check if the user already exists
-    const existingEmail = await User.findOne({ email });
+    const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) {
       res.status(400).json({ message: 'Email already in use' });
       return;
     }
 
-    const existingUsername = await User.findOne({ username });
+    const existingUsername = await User.findOne({ where: { username } });
     if (existingUsername) {
       res.status(400).json({ message: 'Username already in use' });
       return;
     }
 
+    const hashedPassword = await bcrypt.hash(password,10)
     // Create a new user
     const newUser = new User({
       name,
       username,
       email,
-      password,
+      password:hashedPassword,
       accountType,
     });
 
@@ -58,7 +59,7 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ where: { email } })
     if (!existingUser) {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
@@ -90,6 +91,36 @@ export const login = async (
     // dummy login response
     res.status(200).json({ user, accessToken,refreshToken, message: 'Logged in!' });
   } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// DELETE /api/v1/user/:id
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    // Check if user exists
+    const existingUser = await User.findByPk(id);
+    if (!existingUser) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    // Delete user
+    await existingUser.destroy();
+
+    // Delete User Bio
+     const userBio = await UserBio.findOne({
+          where: { userId: Number(existingUser?.id) },
+      });
+    
+    //Delete userbio if available
+    userBio?.destroy();
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

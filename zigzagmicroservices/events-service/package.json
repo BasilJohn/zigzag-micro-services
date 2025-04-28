@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
-    "dev": "nodemon --exec ts-node src/server.ts"
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "db:create": "cross-env DOCKER=false ts-node src/scripts/createDatabase.ts",
+    "db:create:docker": "cross-env DOCKER=true ts-node src/scripts/createDatabase.ts",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:reset": "sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +20,7 @@
   "dependencies": {
     "amqplib": "^0.10.7",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "pg": "^8.15.5",
