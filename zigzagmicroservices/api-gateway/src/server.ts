@@ -33,6 +33,19 @@ app.use(
   })
 );
 
+// Proxy /api/v1/media
+app.use(
+  "/api/v1/media",
+  authenticateAccessToken,
+  createProxyMiddleware({
+    target: process.env.MEDIA_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/v1/media": "/api/v1/media",
+    },
+  })
+);
+
 // Catch all
 app.use((req, res) => {
   res.status(404).send("❌ API Gateway: Route not found.");
