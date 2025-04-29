@@ -9,7 +9,6 @@ const upload = multer({ storage: multer.memoryStorage() }).single('file');
 // POST /api/v1/media/upload
 export const uploadFile = async (req: Request, res: Response) => {
   upload(req, res, async (err) => {
-    {console.log("BAS")}
     if (err) return res.status(400).json({ message: 'File upload error', error: err.message });
 
     if (!req.file) return res.status(400).json({ message: 'No file provided' });
