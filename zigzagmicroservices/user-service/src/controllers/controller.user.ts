@@ -45,7 +45,21 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     // Save the user to the database
     await newUser.save();
 
-    res.status(201).json({ message: 'User created successfully' });
+    //Create a JWT token if login is successful
+    const payload = {
+      email: email,
+    };
+
+    const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
+      expiresIn: "1d",
+    });
+
+    const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
+      expiresIn: '30d', 
+    });
+
+    // dummy login response
+    res.status(200).json({ payload, accessToken,refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ "message": error });
   }
@@ -76,20 +90,16 @@ export const login = async (
       email: email,
     };
 
-    const user ={
-      email
-    }
-
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
 
-    const refreshToken = jwt.sign(user, JWT_SECRET_REFRESH_TOKEN , {
-      expiresIn: '7d', 
+    const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
+      expiresIn: '30d', 
     });
 
     // dummy login response
-    res.status(200).json({ user, accessToken,refreshToken, message: 'Logged in!' });
+    res.status(200).json({ payload, accessToken,refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }

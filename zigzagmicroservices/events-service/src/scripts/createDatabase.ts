@@ -19,8 +19,10 @@ async function createDatabase() {
     process.exit(0);
   } catch (error: any) {
     if (error.original?.code === '42P04') { // 42P04 = "already exists"
-      console.log('ℹ️  Database already exists');
-      process.exit(0);
+      console.log('ℹ️  Database already exists, dropping it...');
+      await sequelize.query(`DROP DATABASE ${process.env.DB_NAME}`);
+      console.log('ℹ️  Database dropped successfully');
+      await createDatabase();
     } else {
       console.error('❌ Error creating database:', error);
       process.exit(1);

@@ -6,17 +6,17 @@ const Event = sequelize.define("Event", {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    shortDescription: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    longDescription: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     tagline: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     address1: {
       type: DataTypes.STRING,
@@ -30,7 +30,11 @@ const Event = sequelize.define("Event", {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    postCode: {
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    postalCode: {
       type: DataTypes.STRING,
       allowNull: false,
     },
