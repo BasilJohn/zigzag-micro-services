@@ -31,7 +31,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Upload failed', error });
     }
   });
-};
+}
 
 
 // POST /api/v1/media/upload-media-multiple
@@ -70,4 +70,17 @@ export const uploadMultipleFiles = (req: Request, res: Response): void => {
       res.status(500).json({ message: 'Upload failed', error });
     }
   });
-};
+}
+
+// GET /api/v1/media/file-url/:objectName
+export const getPresignedUrl = async (req: Request, res: Response) => {
+  const { objectName } = req.params // filename saved in DB
+
+  try {
+    const url = await minioClient.presignedGetObject(BUCKET, objectName, 60 * 10); // valid 10 min
+    res.json({ url });
+  } catch (error) {
+    console.error('Presign error:', error);
+    res.status(500).json({ message: 'Failed to generate presigned URL' })
+  }
+}

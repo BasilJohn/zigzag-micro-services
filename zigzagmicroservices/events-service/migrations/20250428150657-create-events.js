@@ -61,7 +61,23 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-      }
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      state: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+      postalCode: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
     });
   },
 
