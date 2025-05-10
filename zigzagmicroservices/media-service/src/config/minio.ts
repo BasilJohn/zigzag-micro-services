@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const isDocker = process.env.DOCKER_ENV === 'true'; // set this in docker-compose if needed
+const isDocker = process.env.DOCKER === 'true'; // set this in docker-compose if needed
 
 
 const minioClient = new Client({

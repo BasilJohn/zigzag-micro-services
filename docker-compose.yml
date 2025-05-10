@@ -40,26 +40,26 @@ services:
       timeout: 5s
       retries: 5
 
-  user-service:
-    build: ./zigzagmicroservices/user-service
-    container_name: user_service
-    depends_on:
-      - postgres
+  # user-service:
+  #   build: ./zigzagmicroservices/user-service
+  #   container_name: user_service
+  #   depends_on:
+  #     - postgres
 
-  event-service:
-    build: ./zigzagmicroservices/events-service
-    container_name: events_service
-    depends_on:
-      - postgres
+  # event-service:
+  #   build: ./zigzagmicroservices/events-service
+  #   container_name: events_service
+  #   depends_on:
+  #     - postgres
 
-  media-service:
-    build: ./zigzagmicroservices/media-service
-    container_name: media_service
-    ports:
-      - "3032:3032"
-    depends_on:
-      minio:
-        condition: service_healthy   
+  # media-service:
+  #   build: ./zigzagmicroservices/media-service
+  #   container_name: media_service
+  #   ports:
+  #     - "3032:3032"
+  #   depends_on:
+  #     minio:
+  #       condition: service_healthy   
 
 volumes:   # <-- move this to root level
   pgdata:

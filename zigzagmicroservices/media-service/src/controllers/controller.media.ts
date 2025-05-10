@@ -4,7 +4,10 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 
 // Memory storage for Multer
-const upload = multer({ storage: multer.memoryStorage() }).single('file');
+const upload = multer({ storage: multer.memoryStorage() }).single('file')
+
+const uploadMultiple = multer({ storage: multer.memoryStorage() }).array('files');
+
 
 // POST /api/v1/media/upload
 export const uploadFile = async (req: Request, res: Response) => {
@@ -22,7 +25,46 @@ export const uploadFile = async (req: Request, res: Response) => {
 
       const fileUrl = `${process.env.MINIO_PUBLIC_URL}/${BUCKET}/${fileName}`;
 
-      res.status(201).json({ message: 'File uploaded successfully', url: fileUrl });
+      res.status(201).json({ message: 'Files uploaded successfully', url: fileUrl });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Upload failed', error });
+    }
+  });
+};
+
+
+// POST /api/v1/media/upload-media-multiple
+export const uploadMultipleFiles = (req: Request, res: Response): void => {
+  uploadMultiple(req, res, async (err) => {
+    if (err)
+      return res.status(400).json({ message: 'File upload error', error: err.message });
+
+    const files = req.files as Express.Multer.File[];
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: 'No files provided' });
+    }
+
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of files) {
+        const fileName = uuidv4() + '-' + file.originalname;
+
+        await minioClient.putObject(
+          BUCKET,
+          fileName,
+          file.buffer,
+          file.size,
+          { 'Content-Type': file.mimetype }
+        );
+
+        const fileUrl = `${process.env.MINIO_PUBLIC_URL}/${BUCKET}/${fileName}`;
+        uploadedUrls.push(fileUrl);
+      }
+
+      res.status(201).json({ message: 'Files uploaded successfully', urls: uploadedUrls });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Upload failed', error });
