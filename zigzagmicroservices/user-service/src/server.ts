@@ -1,3 +1,5 @@
+import './config/loadEnv'; // must be loaded BEFORE using process.env
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
