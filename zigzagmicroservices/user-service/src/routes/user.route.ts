@@ -7,12 +7,12 @@ const router = express.Router()
 
 //User
 router.post('/login', login)
+router.post('/signup', signup)
 
 //✅ Apply authentication middleware to all routes below this line
 router.use(authenticateAccessToken)
 
 
-router.post('/signup', signup)
 router.delete('/:id', deleteUser)
 
 //User Bio

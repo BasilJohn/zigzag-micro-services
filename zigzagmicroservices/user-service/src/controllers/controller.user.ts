@@ -55,7 +55,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
-      expiresIn: '30d', 
+      expiresIn: '7d', 
     });
 
     // dummy login response
