@@ -10,17 +10,15 @@ export const createUserBio = async (
   try {
     const { id } = req.params; // userId from URL
     const {
-      birthday,
-      showBirthday,
-      pronouns,
-      showPronouns,
-      vibe,
-      vibeWith,
-      interests,
       availability,
-      whyHere,
       bio,
-      photos,
+      birthday,
+      interests,
+      preferredVibe,
+      profilePicture,
+      pronouns,
+      purpose,
+      userVibe,
     } = req.body;
 
     // 1. Check if user exists
@@ -32,7 +30,7 @@ export const createUserBio = async (
     }
 
     // 2. Check if UserBio already exists (optional but good)
-    const existingBio = await UserBio.findOne({ where: { userId: id } });
+    const existingBio = await UserBio.findOne({ where: { userId: Number(id) } });
 
     if (existingBio) {
       res.status(400).json({ message: "UserBio already exists" });
@@ -42,17 +40,15 @@ export const createUserBio = async (
     // 3. Create UserBio
     const newUserBio = await UserBio.create({
       userId: Number(id),
-      birthday,
-      showBirthday,
-      pronouns,
-      showPronouns,
-      vibe,
-      vibeWith,
-      interests,
       availability,
-      whyHere,
       bio,
-      photos,
+      birthday,
+      interests,
+      preferredVibe,
+      profilePicture,
+      pronouns,
+      purpose,
+      userVibe,
     });
 
     res

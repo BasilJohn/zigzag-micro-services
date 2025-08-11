@@ -1,3 +1,7 @@
+import Booking from "./Bookings";
 import Event from "./Events";
 
-export default Event
+export {
+  Booking,
+  Event
+}

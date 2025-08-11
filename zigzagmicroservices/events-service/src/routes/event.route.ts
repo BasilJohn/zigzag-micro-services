@@ -1,8 +1,9 @@
 import express from 'express';
-import { createEvent, getAllEvents, getEventById } from '../controllers/Event';
+import { bookEvent, createEvent, getAllEvents, getEventById } from '../controllers/Event';
 
 const router = express.Router();
 
+router.post('/bookEvent', bookEvent);
 router.post('/createEvent', createEvent);
 router.get('/getAllEvents', getAllEvents);
 router.get('/getEventById/:id', getEventById);

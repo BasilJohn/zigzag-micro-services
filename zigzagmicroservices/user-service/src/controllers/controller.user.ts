@@ -47,7 +47,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     //Create a JWT token if login is successful
     const payload = {
-      email: email,
+      userId: newUser.id,
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
@@ -87,7 +87,7 @@ export const login = async (
 
     //Create a JWT token if login is successful
     const payload = {
-      email: email,
+      userId: existingUser.id,
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
