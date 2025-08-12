@@ -79,6 +79,7 @@ export const login = async (
       return;
     }
 
+
     const isPasswordValid = await bcrypt.compare(password, existingUser.password);
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Invalid credentials' });
@@ -88,6 +89,7 @@ export const login = async (
     //Create a JWT token if login is successful
     const payload = {
       email: email,
+      id: existingUser?.id
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
@@ -97,9 +99,7 @@ export const login = async (
     const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
       expiresIn: '30d', 
     });
-
-    // dummy login response
-    res.status(200).json({ payload, accessToken,refreshToken, message: 'Logged in!' });
+    res.status(200).json({ payload, accessToken, refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }

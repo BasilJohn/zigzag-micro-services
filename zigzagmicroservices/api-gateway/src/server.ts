@@ -30,6 +30,22 @@ app.use(
     pathRewrite: {
       "^/api/v1/events": "/api/v1/events",
     },
+      on: {
+      proxyReq: (proxyReq, req, _res) => {
+        const user: any = (req as any).user;
+        if (user) {
+          proxyReq.setHeader("x-user-id", user.id);
+          if (user.email) proxyReq.setHeader("x-user-email", user.email);
+        }
+        if (process.env.INTERNAL_GATEWAY_KEY) {
+          proxyReq.setHeader("x-internal-key", process.env.INTERNAL_GATEWAY_KEY);
+        }
+      },
+      error: (err, _req, res) => {
+        console.error("Proxy error:", err.message);
+        (res as any).status(502).json({ message: "Upstream service unavailable" });
+      },
+    },
   })
 );
 
