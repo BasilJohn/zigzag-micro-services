@@ -1,6 +1,6 @@
 import express from "express";
-import { createEvent, getAllEvents, getEventById } from "../controllers/Event";
-import { joinEvent, withdrawEvent } from "../controllers/EventAttendee";
+import { createEvent, getAllEvents, getEventById  } from "../controllers/Event";
+import { joinEvent, withdrawEvent,getMyAttendance  } from "../controllers/EventAttendee";
 import { requireInternalKey } from "../middlewares/requireInternalKey";
 import { requireUserContext } from "../middlewares/requireUserContext";
 
@@ -21,6 +21,20 @@ router.delete(
   requireInternalKey,
   requireUserContext,
   withdrawEvent
+);
+
+router.delete(
+  "/:eventId/attendees/me",
+  requireInternalKey,
+  requireUserContext,
+  withdrawEvent
+);
+
+router.get(
+  "/:eventId/attendees/me",
+  requireInternalKey,
+  requireUserContext,
+  getMyAttendance
 );
 
 export default router;

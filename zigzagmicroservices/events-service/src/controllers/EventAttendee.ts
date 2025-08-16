@@ -1,7 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import sequelize from "../config/database";
 import Event from "../models/Events";
 import EventAttendee from "../models/EventAttendee";
+
+type Params = { eventId: string };
 
 export const joinEvent = async (
   req: Request,
@@ -67,4 +69,34 @@ export const withdrawEvent = async (
   } catch (err) {
     next(err);
   }
+};
+
+// GET /events/:eventId/attendees/me
+export const getMyAttendance: RequestHandler<Params> = async (req:Request, res:Response) => {
+  const eventId = Number(req.params.eventId);
+  if (!Number.isInteger(eventId) || eventId <= 0) {
+    res.status(400).json({ message: "Invalid eventId" });
+    return;
+  }
+
+  const userId = (req as any).user?.id; // <-- set by authenticateAccessToken
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const attendee = await EventAttendee.findOne({
+    where: { eventId, userId },
+  });
+
+  if (attendee) {
+    res.status(200).json({
+      attending: true,
+      attendeeId: attendee.id,
+      eventId: attendee.eventId,
+      userId: attendee.userId,
+    });
+    return;
+  }
+  res.json({ attending: false });
 };
