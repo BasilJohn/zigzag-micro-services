@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 
 export interface IUser {
@@ -11,6 +11,8 @@ export interface IUser {
   createdAt?: Date
 }
 
+//interface UserCreationAttributes extends Optional<IUser, 'id' | 'createdAt'> {}
+
 export class User extends Model<IUser> implements IUser {
   public id!: number
   public name!: string
@@ -19,6 +21,9 @@ export class User extends Model<IUser> implements IUser {
   public password!: string
   public accountType!: 'personal' | 'business'
   public createdAt!: Date
+
+  // Sequelize static methods
+  //public static readonly associations: { [key: string]: any };
 }
 
 User.init({

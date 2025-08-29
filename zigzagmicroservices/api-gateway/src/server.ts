@@ -8,17 +8,95 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Proxy /api/v1/user
-app.use(
-  "/api/v1/user",
-  createProxyMiddleware({
-    target: process.env.USER_SERVICE_URL,
-    changeOrigin: true,
-    pathRewrite: {
-      "^/api/v1/user": "/api/v1/user",
-    },
-  })
-);
+// Add middleware to parse JSON
+app.use(express.json());
+
+// CORS middleware - must come before routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  next();
+});
+
+// Debug middleware - log all requests
+app.use((req, res, next) => {
+  console.log(`🔍 API Gateway: ${req.method} ${req.url}`);
+  console.log(`🔍 Headers:`, req.headers);
+  console.log(`🔍 Path: ${req.path}`);
+  console.log(`🔍 Base URL: ${req.baseUrl}`);
+  console.log(`🔍 Original URL: ${req.originalUrl}`);
+  next();
+});
+
+// Test route to verify middleware is working
+app.get("/test", (req, res) => {
+  console.log("🧪 Test route hit");
+  res.json({ message: "Test route working" });
+});
+
+// Manual proxy for /api/v1/user
+console.log("🔧 Registering manual proxy for /api/v1/user");
+app.use("/api/v1/user", async (req, res) => {
+  console.log(`🎯 Manual proxy triggered for: ${req.method} ${req.originalUrl}`);
+  
+             try {
+             const targetUrl = `http://user-service:3030${req.originalUrl}`;
+             console.log(`🔄 Making request to: ${targetUrl}`);
+    
+    // Use the built-in http module to make the request
+    const http = require('http');
+    const url = require('url');
+    
+    const parsedUrl = url.parse(targetUrl);
+    const options = {
+      hostname: parsedUrl.hostname,
+      port: parsedUrl.port,
+      path: parsedUrl.path,
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...req.headers
+      }
+    };
+    
+    const proxyReq = http.request(options, (proxyRes: any) => {
+      console.log(`🔄 Response from user service: ${proxyRes.statusCode}`);
+      
+      let data = '';
+      proxyRes.on('data', (chunk: any) => {
+        data += chunk;
+      });
+      
+      proxyRes.on('end', () => {
+        console.log(`🔄 Response data: ${data}`);
+        res.status(proxyRes.statusCode).send(data);
+      });
+    });
+    
+    proxyReq.on('error', (error: any) => {
+      console.error('❌ Proxy request error:', error);
+      res.status(500).json({ error: 'Proxy error', details: error.message });
+    });
+    
+    if (req.method !== 'GET' && req.body) {
+      proxyReq.write(JSON.stringify(req.body));
+    }
+    
+    proxyReq.end();
+    
+  } catch (error) {
+    console.error('❌ Manual proxy error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Proxy error', details: errorMessage });
+  }
+});
+console.log("✅ Manual proxy registered for /api/v1/user");
 
 // Proxy /api/v1/events
 app.use(
@@ -33,8 +111,8 @@ app.use(
       on: {
       proxyReq: (proxyReq, req, _res) => {
         const user: any = (req as any).user;
-        if (user) {
-          proxyReq.setHeader("x-user-id", user.id);
+        if (user && user.userId) {
+          proxyReq.setHeader("x-user-id", user.userId);
           if (user.email) proxyReq.setHeader("x-user-email", user.email);
         }
         if (process.env.INTERNAL_GATEWAY_KEY) {
@@ -54,10 +132,10 @@ app.use(
   "/api/v1/media",
   authenticateAccessToken,
   createProxyMiddleware({
-    target: process.env.MEDIA_SERVICE_URL,
+    target: process.env.MEDIA_SERVICE_URL || "http://media-service:3032", // Use Docker service name
     changeOrigin: true,
     pathRewrite: {
-      "^/api/v1/media": "/api/v1/media",
+      "^/api/v1/media": "",
     },
   })
 );
@@ -69,4 +147,7 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
   console.log(`✅ API Gateway running on port ${PORT}`);
+  console.log(`🔗 User Service: ${process.env.USER_SERVICE_URL}`);
+  console.log(`🔗 Event Service: ${process.env.EVENT_SERVICE_URL}`);
+  console.log(`🔗 Media Service: ${process.env.MEDIA_SERVICE_URL}`);
 });

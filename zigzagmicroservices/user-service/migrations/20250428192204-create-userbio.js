@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      userId: {
+      userid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
@@ -24,13 +24,13 @@ module.exports = {
       showBirthday: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
       pronouns: { type: Sequelize.STRING, allowNull: true },
       showPronouns: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-      vibe: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
-      vibeWith: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
-      interests: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
+      userVibe: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
+      othersVibe: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
+      eventInterests: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
       availability: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
-      whyHere: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
+      purpose: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
       bio: { type: Sequelize.TEXT, allowNull: true },
-      photos: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
+      profilePicture: { type: Sequelize.ARRAY(Sequelize.STRING), allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.fn('NOW') },
       updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.fn('NOW') },
     });

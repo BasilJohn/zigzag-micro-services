@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Request, Response } from 'express'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/model.user'
 import UserBio from "../models/model.userbio";
@@ -47,7 +47,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     //Create a JWT token if login is successful
     const payload = {
-      email: email,
+      userId: newUser.id
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
@@ -55,11 +55,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
-      expiresIn: '7d', 
+      expiresIn: '30d', 
     });
 
     // dummy login response
-    res.status(200).json({ payload, accessToken,refreshToken, message: 'Logged in!' });
+    res.status(200).json({ payload, accessToken, refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ "message": error });
   }
@@ -79,7 +79,6 @@ export const login = async (
       return;
     }
 
-
     const isPasswordValid = await bcrypt.compare(password, existingUser.password);
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Invalid credentials' });
@@ -89,7 +88,7 @@ export const login = async (
     //Create a JWT token if login is successful
     const payload = {
       email: email,
-      id: existingUser?.id
+      userId: existingUser?.id
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET_ACCESS_TOKEN, {
@@ -99,6 +98,8 @@ export const login = async (
     const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH_TOKEN , {
       expiresIn: '30d', 
     });
+
+    // dummy login response
     res.status(200).json({ payload, accessToken, refreshToken, message: 'Logged in!' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
@@ -131,6 +132,52 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Failed to delete user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+// GET /api/v1/user/:id
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+try {
+  const { id } = req.params;
+
+  const user = await User.findByPk(id);
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+
+  res.status(200).json({
+    id: user.id,
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    accountType: user.accountType,
+    createdAt: user.createdAt
+  });
+} catch (error) {
+  console.error('Failed to get user profile:', error);
+  res.status(500).json({ message: 'Internal server error' });
+}
+};
+
+// PATCH /api/v1/user/:id
+export const updateUserInfo = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { name, username, email } = req.body;
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    await user.update({ name, username, email });
+    res.status(200).json({ message: 'User updated successfully', user });
+  } catch (error) {
+    console.error('Failed to update user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

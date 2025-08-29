@@ -12,14 +12,14 @@ export class UserBio extends Model {
   public pronouns!: string | null;
   public showPronouns!: boolean;
 
-  public vibe!: string[] | null;
-  public vibeWith!: string[] | null;
-  public interests!: string[] | null;
+  public userVibe!: string[] | null;
+  public othersVibe!: string[] | null;
+  public eventInterests!: string[] | null;
   public availability!: string[] | null;
-  public whyHere!: string[] | null;
+  public purpose!: string[] | null;
 
   public bio!: string | null;
-  public photos!: string[] | null;
+  public profilePicture!: string[] | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -52,15 +52,15 @@ UserBio.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  vibe: {
+  userVibe: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
-  vibeWith: {
+  othersVibe: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
-  interests: {
+  eventInterests: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
@@ -68,7 +68,7 @@ UserBio.init({
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
-  whyHere: {
+  purpose: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
@@ -76,7 +76,7 @@ UserBio.init({
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  photos: {
+  profilePicture: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   }
