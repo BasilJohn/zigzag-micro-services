@@ -26,28 +26,14 @@ app.use((req, res, next) => {
 
 // Debug middleware - log all requests
 app.use((req, res, next) => {
-  console.log(`🔍 API Gateway: ${req.method} ${req.url}`);
-  console.log(`🔍 Headers:`, req.headers);
-  console.log(`🔍 Path: ${req.path}`);
-  console.log(`🔍 Base URL: ${req.baseUrl}`);
-  console.log(`🔍 Original URL: ${req.originalUrl}`);
   next();
 });
 
-// Test route to verify middleware is working
-app.get("/test", (req, res) => {
-  console.log("🧪 Test route hit");
-  res.json({ message: "Test route working" });
-});
 
 // Manual proxy for /api/v1/user
-console.log("🔧 Registering manual proxy for /api/v1/user");
 app.use("/api/v1/user", async (req, res) => {
-  console.log(`🎯 Manual proxy triggered for: ${req.method} ${req.originalUrl}`);
-  
-             try {
-             const targetUrl = `http://user-service:3030${req.originalUrl}`;
-             console.log(`🔄 Making request to: ${targetUrl}`);
+  try {
+    const targetUrl = `http://user-service:3030${req.originalUrl}`;
     
     // Use the built-in http module to make the request
     const http = require('http');
@@ -65,8 +51,7 @@ app.use("/api/v1/user", async (req, res) => {
       }
     };
     
-    const proxyReq = http.request(options, (proxyRes: any) => {
-      console.log(`🔄 Response from user service: ${proxyRes.statusCode}`);
+    const proxyReq = http.request(options, (proxyRes: any) => {console.log(`🔄 Response from user service: ${proxyRes.statusCode}`);
       
       let data = '';
       proxyRes.on('data', (chunk: any) => {
@@ -74,13 +59,11 @@ app.use("/api/v1/user", async (req, res) => {
       });
       
       proxyRes.on('end', () => {
-        console.log(`🔄 Response data: ${data}`);
         res.status(proxyRes.statusCode).send(data);
       });
     });
     
     proxyReq.on('error', (error: any) => {
-      console.error('❌ Proxy request error:', error);
       res.status(500).json({ error: 'Proxy error', details: error.message });
     });
     
@@ -91,12 +74,10 @@ app.use("/api/v1/user", async (req, res) => {
     proxyReq.end();
     
   } catch (error) {
-    console.error('❌ Manual proxy error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Proxy error', details: errorMessage });
   }
 });
-console.log("✅ Manual proxy registered for /api/v1/user");
 
 // Proxy /api/v1/events
 app.use(
@@ -120,7 +101,6 @@ app.use(
         }
       },
       error: (err, _req, res) => {
-        console.error("Proxy error:", err.message);
         (res as any).status(502).json({ message: "Upstream service unavailable" });
       },
     },
@@ -149,5 +129,5 @@ app.listen(PORT, () => {
   console.log(`✅ API Gateway running on port ${PORT}`);
   console.log(`🔗 User Service: ${process.env.USER_SERVICE_URL}`);
   console.log(`🔗 Event Service: ${process.env.EVENT_SERVICE_URL}`);
-  console.log(`🔗 Media Service: ${process.env.MEDIA_SERVICE_URL}`);
+  console.log(`🔗 Media Service: ${process.env.MEDIA_SERVICE_URL}`);  
 });
