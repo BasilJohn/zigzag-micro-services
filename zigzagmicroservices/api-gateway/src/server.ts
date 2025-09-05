@@ -8,8 +8,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Add middleware to parse JSON
-app.use(express.json());
+// // Add middleware to parse JSON
+// app.use(express.json());
 
 // CORS middleware - must come before routes
 app.use((req, res, next) => {
@@ -24,61 +24,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Debug middleware - log all requests
-app.use((req, res, next) => {
-  next();
-});
-
-
-// Manual proxy for /api/v1/user
-app.use("/api/v1/user", async (req, res) => {
-  try {
-    const targetUrl = `http://user-service:3030${req.originalUrl}`;
-    
-    // Use the built-in http module to make the request
-    const http = require('http');
-    const url = require('url');
-    
-    const parsedUrl = url.parse(targetUrl);
-    const options = {
-      hostname: parsedUrl.hostname,
-      port: parsedUrl.port,
-      path: parsedUrl.path,
-      method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...req.headers
-      }
-    };
-    
-    const proxyReq = http.request(options, (proxyRes: any) => {console.log(`🔄 Response from user service: ${proxyRes.statusCode}`);
-      
-      let data = '';
-      proxyRes.on('data', (chunk: any) => {
-        data += chunk;
-      });
-      
-      proxyRes.on('end', () => {
-        res.status(proxyRes.statusCode).send(data);
-      });
-    });
-    
-    proxyReq.on('error', (error: any) => {
-      res.status(500).json({ error: 'Proxy error', details: error.message });
-    });
-    
-    if (req.method !== 'GET' && req.body) {
-      proxyReq.write(JSON.stringify(req.body));
-    }
-    
-    proxyReq.end();
-    
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ error: 'Proxy error', details: errorMessage });
-  }
-});
-
+// Proxy /api/v1/user
+app.use(
+  "/api/v1/user",
+  createProxyMiddleware({
+    target: process.env.USER_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/v1/user": "/api/v1/user",
+    },
+  })
+);
 // Proxy /api/v1/events
 app.use(
   "/api/v1/events",
@@ -112,10 +68,10 @@ app.use(
   "/api/v1/media",
   authenticateAccessToken,
   createProxyMiddleware({
-    target: process.env.MEDIA_SERVICE_URL || "http://media-service:3032", // Use Docker service name
+    target: process.env.MEDIA_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: {
-      "^/api/v1/media": "",
+      "^/api/v1/media": "/api/v1/media",
     },
   })
 );

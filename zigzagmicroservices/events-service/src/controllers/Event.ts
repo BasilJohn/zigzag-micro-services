@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Event from "../models";
+import Event from "../models/Events";
 import { publishToQueue } from "../rabbitmq/rabbitmq";
 
 // POST /api/v1/events/createEvent
