@@ -20,7 +20,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        userId: 2,
+        userid: 2,
         birthday: '1990-02-10',
         showBirthday: false,
         pronouns: 'she/her',

@@ -1,25 +1,27 @@
 import express from 'express'
-import { login, signup, deleteUser } from '../controllers/controller.user'
+import { login, signup, deleteUser, getUserProfile, updateUserInfo } from '../controllers/controller.user'
 import { createUserBio, updateUserBio, getUserBio } from '../controllers/controller.userbio'
-import { authenticateAccessToken } from '../middleware/authMiddleware'
 
 const router = express.Router()
 
-//User
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'User router is working!' })
+})
+
+// Public routes (no authentication required)
 router.post('/login', login)
 router.post('/signup', signup)
 
-//✅ Apply authentication middleware to all routes below this line
-router.use(authenticateAccessToken)
-
-
+// Protected routes (authentication handled at API Gateway level)
+router.get('/:id', getUserProfile)
+router.patch('/:id', updateUserInfo)
 router.delete('/:id', deleteUser)
 
-//User Bio
+//User Bio (protected routes)
 router.post('/:id/bio', createUserBio)
 router.patch('/:id/bio', updateUserBio)
 router.get('/:id/bio', getUserBio)
 
-
-
 export default router;
+

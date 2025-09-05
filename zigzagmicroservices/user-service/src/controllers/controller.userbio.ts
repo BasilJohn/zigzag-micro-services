@@ -14,13 +14,13 @@ export const createUserBio = async (
       showBirthday,
       pronouns,
       showPronouns,
-      vibe,
-      vibeWith,
-      interests,
+      userVibe,
+      othersVibe,
+      eventInterests,
       availability,
-      whyHere,
+      purpose,
       bio,
-      photos,
+      profilePicture,
     } = req.body;
 
     // 1. Check if user exists
@@ -46,13 +46,13 @@ export const createUserBio = async (
       showBirthday,
       pronouns,
       showPronouns,
-      vibe,
-      vibeWith,
-      interests,
+      userVibe,
+      othersVibe,
+      eventInterests,
       availability,
-      whyHere,
+      purpose,
       bio,
-      photos,
+      profilePicture,
     });
 
     res
