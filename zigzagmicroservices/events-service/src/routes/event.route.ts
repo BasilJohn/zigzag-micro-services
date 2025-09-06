@@ -1,6 +1,6 @@
 import express from "express";
 import { createEvent, getAllEvents, getEventById  } from "../controllers/Event";
-import { joinEvent, withdrawEvent,getMyAttendance, getEventAttendees, getEventAttendeesCount  } from "../controllers/EventAttendee";
+import { joinEvent, withdrawEvent,getMyAttendance, getEventAttendees, getEventAttendeesCount, getUserEventAttendance  } from "../controllers/EventAttendee";
 import { requireInternalKey } from "../middlewares/requireInternalKey";
 import { requireUserContext } from "../middlewares/requireUserContext";
 
@@ -35,6 +35,13 @@ router.get(
   requireInternalKey,
   requireUserContext,
   getMyAttendance
+);
+
+router.get(
+  "/:userId/getUserEventAttendance/me",
+  requireInternalKey,
+  requireUserContext,
+  getUserEventAttendance
 );
 
 router.get("/:eventId/attendees", /* requireInternalKey, requireUserContext, */ getEventAttendees);

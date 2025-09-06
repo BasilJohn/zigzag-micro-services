@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import sequelize from "../config/database";
 import Event from "../models/Events";
 import EventAttendee from "../models/EventAttendee";
-
+import * as eventAttendeeService from "../services/eventAttendee.service";
 type Params = { eventId: string };
 
 export const joinEvent = async (
@@ -174,4 +174,18 @@ export const getEventAttendeesCount: RequestHandler = async (req:Request, res:Re
   const count = await EventAttendee.count({ where: { eventId } });
   res.status(200).json({ eventId, count });
   return;
+};
+
+// GET /events/:userId/getUserEventAttendance/me
+export const getUserEventAttendance: RequestHandler<Params> = async (req:Request, res:Response) => {
+
+  const userId = (req as any).user?.id; // <-- set by authenticateAccessToken
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const myEventsAttendance = await eventAttendeeService.getUserEventAttendance(userId);
+
+  res.status(200).json({ myEventsAttendance });
 };
