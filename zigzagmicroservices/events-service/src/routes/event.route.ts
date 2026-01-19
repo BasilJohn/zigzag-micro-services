@@ -6,6 +6,11 @@ import { requireUserContext } from "../middlewares/requireUserContext";
 
 const router = express.Router();
 
+// Root route - GET returns all events, POST creates a new event
+router.get("/", getAllEvents);
+router.post("/", createEvent);
+
+// Legacy endpoint (still supported)
 router.post("/createEvent", createEvent);
 router.get("/getAllEvents", getAllEvents);
 router.get("/getEventById/:id", getEventById);
@@ -16,13 +21,6 @@ router.post(
   requireUserContext,
   joinEvent
 );
-router.delete(
-  "/:eventId/attendees/me",
-  requireInternalKey,
-  requireUserContext,
-  withdrawEvent
-);
-
 router.delete(
   "/:eventId/attendees/me",
   requireInternalKey,

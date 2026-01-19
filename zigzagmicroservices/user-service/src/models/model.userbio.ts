@@ -35,6 +35,7 @@ UserBio.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: true, // 1:1 relationship
+    field: 'userid', // Map to lowercase database column
   },
   birthday: {
     type: DataTypes.DATEONLY,

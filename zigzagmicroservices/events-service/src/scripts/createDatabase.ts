@@ -2,7 +2,10 @@ import { Sequelize } from 'sequelize';
 require('dotenv').config();
 
 const isDocker = process.env.DOCKER === 'true';
-const host = isDocker ? process.env.DB_HOST_DOCKER : process.env.DB_HOST_LOCAL;
+// When running from host machine, always use localhost since postgres port is exposed to host
+// DB_HOST_DOCKER ("postgres") is only valid when script runs inside a Docker container
+// Since this script runs from host, we use localhost regardless of DOCKER flag
+const host = process.env.DB_HOST_LOCAL || 'localhost';
 const user = process.env.DB_USER || 'postgres';
 const password = process.env.DB_PASSWORD || 'zigzag';
 const port = process.env.DB_PORT || '5432';

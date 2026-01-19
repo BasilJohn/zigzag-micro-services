@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
-    "dev": "nodemon --exec ts-node src/server.ts"
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "db:create:docker": "echo 'ℹ️  media-service uses MinIO for storage, not PostgreSQL. No database setup needed.'",
+    "db:migrate": "echo 'ℹ️  media-service uses MinIO for storage, not PostgreSQL. No migrations needed.'"
   },
   "keywords": [],
   "author": "",

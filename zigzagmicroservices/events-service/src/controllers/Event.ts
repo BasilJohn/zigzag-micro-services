@@ -5,15 +5,33 @@ import { publishToQueue } from "../rabbitmq/rabbitmq";
 // POST /api/v1/events/createEvent
 export const createEvent = async (req: Request, res: Response) => {
   try {
-    const event = await Event.create(req.body);
+    // Prepare event data with defaults for required database fields
+    const eventData = {
+      ...req.body,
+      // Sync postCode with postalCode if postalCode is provided
+      postCode: req.body.postCode || req.body.postalCode,
+      postalCode: req.body.postalCode || req.body.postCode,
+      // Provide defaults for shortDescription and longDescription if not provided
+      shortDescription: req.body.shortDescription || req.body.description?.substring(0, 255) || req.body.title,
+      longDescription: req.body.longDescription || req.body.description || '',
+    };
+
+    const event = await Event.create(eventData);
 
     //Send create event to notification service through message queue
     //publishToQueue(event)
 
     res.status(201).json(event)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating event:', error);
-    res.status(500).json({ message: 'Failed to create event' });
+    // Return more detailed error information
+    const errorMessage = error?.message || 'Failed to create event';
+    const errorDetails = error?.errors?.map((err: any) => err.message).join(', ') || errorMessage;
+    res.status(500).json({ 
+      message: 'Failed to create event',
+      error: errorDetails,
+      details: process.env.NODE_ENV === 'development' ? error : undefined
+    });
   }
 };
 

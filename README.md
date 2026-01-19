@@ -107,10 +107,14 @@ Inside each microservice folder:
 
     yarn db:create:docker
 
-    3.	Run Migrations:
+  3.	Run Migrations:
 
     yarn db:migrate
 
+  4. npm run dev  
+
+
+For media-service, just ensure MinIO is running (via docker-compose up) and the service will automatically create the required bucket when it starts.
 
 🗂️ Sequelize Useful Commands
 

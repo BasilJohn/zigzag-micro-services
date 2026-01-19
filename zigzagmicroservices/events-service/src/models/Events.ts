@@ -6,6 +6,14 @@ const Event = sequelize.define("Event", {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    shortDescription: {
+      type: DataTypes.STRING,
+      allowNull: false, // Required in database, but controller provides default
+    },
+    longDescription: {
+      type: DataTypes.TEXT,
+      allowNull: false, // Required in database, but controller provides default
+    },
     tagline: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -33,6 +41,11 @@ const Event = sequelize.define("Event", {
     state: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    postCode: {
+      type: DataTypes.STRING,
+      allowNull: false, // Required in database, but controller syncs with postalCode
+      field: 'postCode', // Explicitly map to database column
     },
     postalCode: {
       type: DataTypes.STRING,
