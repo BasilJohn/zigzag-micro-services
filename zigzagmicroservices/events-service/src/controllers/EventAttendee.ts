@@ -185,7 +185,10 @@ export const getUserEventAttendance: RequestHandler<Params> = async (req:Request
     return;
   }
 
-  const myEventsAttendance = await eventAttendeeService.getUserEventAttendance(userId);
+  // Get internal key from headers (set by API Gateway or middleware)
+  const internalKey = req.headers['x-internal-key'] as string || process.env.INTERNAL_GATEWAY_KEY;
+
+  const myEventsAttendance = await eventAttendeeService.getUserEventAttendance(userId, internalKey);
 
   res.status(200).json({ myEventsAttendance });
 };
